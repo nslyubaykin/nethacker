@@ -1433,10 +1433,7 @@ class Agent:
 
         if (
                 (self.is_safe_to_pray(500) and
-                 # hypothesis: praying at one-third health prevents early melee deaths
-                 # before a fast or multi-attacking monster gets the extra turn that
-                 # makes the former near-fatal prayer threshold unusable.
-                 (self.blstats.hitpoints < 1 / 3
+                 (self.blstats.hitpoints < 1 / (5 if self.blstats.experience_level < 6 else 6)
                   * self.blstats.max_hitpoints or self.blstats.hitpoints < 6))
                 or (self.is_safe_to_pray(400) and self.blstats.hunger_state >= Hunger.FAINTING)
         ):

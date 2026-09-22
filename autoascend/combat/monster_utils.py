@@ -4,8 +4,8 @@
 ONLY_RANGED_SLOW_MONSTERS = ['floating eye', 'blue jelly', 'brown mold', 'gas spore', 'acid blob',
                              'chickatrice', 'cockatrice']
 EXPLODING_MONSTERS = ['yellow light', 'gas spore', 'flaming sphere', 'freezing sphere', 'shocking sphere']
-# hypothesis: treating high-damage multiattack monsters as dangerous makes the
-# existing low-health retreat and defensive actions engage before they kill.
+# hypothesis: classifying high-damage multi-attack monsters as dangerous lets the
+# existing low-health retreat policy avoid fatal melee exchanges across roles.
 DANGEROUS_MONSTERS = ['giant ant', 'killer bee', 'soldier ant', 'fire ant', 'giant beetle', 'queen bee',
                       'jaguar', 'leocrotta', 'tiger', 'owlbear', 'mumak']
 WEAK_MONSTERS = ['lichen', 'newt', 'shrieker', 'grid bug']
@@ -14,10 +14,10 @@ WEIRD_MONSTERS = ['leprechaun', 'nymph']
 
 def is_monster_faster(agent, monster):
     _, y, x, mon, _ = monster
+    # TOOD: implement properly
     return 'bat' in mon.mname or 'dog' in mon.mname or 'cat' in mon.mname \
            or 'kitten' in mon.mname or 'pony' in mon.mname or 'horse' in mon.mname \
-           or 'bee' in mon.mname or 'fox' in mon.mname \
-           or mon.mname in ('jaguar', 'leocrotta')
+           or 'bee' in mon.mname or 'fox' in mon.mname
 
 
 def imminent_death_on_melee(agent, monster):
