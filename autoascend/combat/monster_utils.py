@@ -3,7 +3,6 @@
 # contact attacks while preserving safe ranged and wand attacks.
 ONLY_RANGED_SLOW_MONSTERS = ['floating eye', 'blue jelly', 'brown mold', 'gas spore', 'acid blob',
                              'chickatrice', 'cockatrice']
-PETRIFYING_MONSTERS = ['chickatrice', 'cockatrice']
 EXPLODING_MONSTERS = ['yellow light', 'gas spore', 'flaming sphere', 'freezing sphere', 'shocking sphere']
 # hypothesis: classifying high-damage multi-attack monsters as dangerous lets the
 # existing low-health retreat policy avoid fatal melee exchanges across roles.
