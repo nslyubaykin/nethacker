@@ -208,9 +208,8 @@ def elbereth_action(agent, monsters):
         return []
     if not agent.can_engrave():
         return []
-    # hypothesis: immediately engraving Elbereth instead of taking a melee
-    # exchange that the retreat policy considers lethal preserves low-HP runs
-    # across all barbarian identities.
+    # hypothesis: engraving Elbereth before an adjacent melee exchange that is
+    # already predicted to be lethal prevents low-HP deaths across identities.
     for monster in monsters:
         _, my, mx, mon, _ = monster
         if adjacent((my, mx), (agent.blstats.y, agent.blstats.x)) \
