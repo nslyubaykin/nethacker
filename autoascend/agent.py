@@ -1416,9 +1416,11 @@ class Agent:
 
         items = [item for item in flatten_items(self.inventory.items) if item.is_unambiguous() and
                  item.category == nh.POTION_CLASS and item.object.name in ['healing', 'extra healing', 'full healing']]
+        # hypothesis: drinking identified healing while substantially wounded prevents
+        # ordinary and multiattack fights from reaching the too-late emergency threshold.
         if (
-                (self.blstats.hitpoints < 1 / 3 * self.blstats.max_hitpoints
-                 or self.blstats.hitpoints < 8) and items
+                (self.blstats.hitpoints < 1 / 2 * self.blstats.max_hitpoints
+                 or self.blstats.hitpoints < 12) and items
         ):
             yield True
             self.inventory.quaff(items[0])
