@@ -1132,23 +1132,25 @@ class Agent:
             move_priority_heatmap, actions = combat.fight_heur.get_priorities(self)
             actions.extend(combat.fight_heur.get_move_actions(self, dis, move_priority_heatmap))
 
-            # hypothesis: never selecting a contact attack against a visible
-            # petrifier lets every barbarian preserve a retreat or ranged
-            # option when combat/exploration becomes stuck, preventing the
-            # otherwise irreversible cockatrice deaths.
-            petrifiers = {(y, x) for _, y, x, mon, _ in monsters
-                          if mon.mname in ('chickatrice', 'cockatrice')}
-            actions = [action for action in actions
-                       if action[1][0] != 'melee' or
-                       (self.blstats.y + action[1][1], self.blstats.x + action[1][2]) not in petrifiers]
-
             if self.character.prop.polymorph:
                 actions = list(filter(lambda x: x[1][0] != 'ranged', actions))
 
             if allow_attack_all:
-                attack_actions = [a for a in actions if a[1][0] in ('melee', 'ranged', 'zap')]
+                # hypothesis: a search-stuck fallback must never force melee
+                # against a known petrifying monster, preserving every role's
+                # progress instead of turning an exploration deadlock fatal.
+                attack_actions = [a for a in actions if a[1][0] in ('ranged', 'zap') or
+                                  (a[1][0] == 'melee' and not any(
+                                      m[1] == self.blstats.y + a[1][1] and
+                                      m[2] == self.blstats.x + a[1][2] and
+                                      m[3].mname in ('chickatrice', 'cockatrice')
+                                      for m in monsters))]
                 if attack_actions:
                     actions = attack_actions
+                else:
+                    non_melee_actions = [a for a in actions if a[1][0] != 'melee']
+                    if non_melee_actions:
+                        actions = non_melee_actions
 
             if not actions:
                 assert 0, 'No possible action available during fight2'
