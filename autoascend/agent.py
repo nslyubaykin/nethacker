@@ -1416,16 +1416,9 @@ class Agent:
 
         items = [item for item in flatten_items(self.inventory.items) if item.is_unambiguous() and
                  item.category == nh.POTION_CLASS and item.object.name in ['healing', 'extra healing', 'full healing']]
-        nearby_hostile = any(distance <= 7 for distance, *_ in self.get_visible_monsters())
         if (
-                # hypothesis: spending identified healing while a hostile is
-                # already in fighting range prevents lethal melee exchanges,
-                # while retaining scarce potions during safe recovery.
-                ((self.blstats.hitpoints < 1 / 3 * self.blstats.max_hitpoints or
-                  self.blstats.hitpoints < 8) or
-                 (nearby_hostile and
-                  (self.blstats.hitpoints < 1 / 2 * self.blstats.max_hitpoints or
-                   self.blstats.hitpoints < 10))) and items
+                (self.blstats.hitpoints < 1 / 3 * self.blstats.max_hitpoints
+                 or self.blstats.hitpoints < 8) and items
         ):
             yield True
             self.inventory.quaff(items[0])

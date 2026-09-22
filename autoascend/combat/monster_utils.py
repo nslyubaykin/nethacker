@@ -18,9 +18,10 @@ def is_monster_faster(agent, monster):
 
 
 def imminent_death_on_melee(agent, monster):
-    if is_dangerous_monster(monster):
-        return agent.blstats.hitpoints <= 16
-    return agent.blstats.hitpoints <= 8
+    # hypothesis: treating every melee opponent as potentially lethal below
+    # 16 HP lets barbarians retreat and recover before an ordinary monster's
+    # damage roll can end an otherwise viable run.
+    return agent.blstats.hitpoints <= 16
 
 
 def is_dangerous_monster(monster):
