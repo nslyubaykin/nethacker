@@ -1417,7 +1417,10 @@ class Agent:
         items = [item for item in flatten_items(self.inventory.items) if item.is_unambiguous() and
                  item.category == nh.POTION_CLASS and item.object.name in ['healing', 'extra healing', 'full healing']]
         if (
-                (self.blstats.hitpoints < 1 / 3 * self.blstats.max_hitpoints
+                # hypothesis: using identified healing before health falls to a
+                # third prevents fragile barbarians from entering the next fight
+                # in one-hit range.
+                (self.blstats.hitpoints < 1 / 2 * self.blstats.max_hitpoints
                  or self.blstats.hitpoints < 8) and items
         ):
             yield True
@@ -1458,18 +1461,14 @@ class Agent:
     def eat_from_inventory(self):
         if self.blstats.hunger_state < Hunger.HUNGRY:
             yield False
-        # hypothesis: choosing the most nutrition-efficient safe food first
-        # shortens hungry interruptions and prevents food supplies being spent
-        # on low-value snacks before they can avert starvation.
-        food = [item for item in flatten_items(self.inventory.items)
-                if item.category == nh.FOOD_CLASS and
-                item.objs[0].name != 'sprig of wolfsbane' and
-                (not item.is_corpse() or
-                 item.monster_id in [MON.from_name(n) - nh.GLYPH_MON_OFF for n in ['lizard', 'lichen']])]
-        for item in sorted(food, key=lambda item: item.object.nutrition / max(item.object.delay, 1), reverse=True):
-            yield True
-            self.inventory.eat(item)
-            return
+        for item in flatten_items(self.inventory.items):
+            if item.category == nh.FOOD_CLASS and \
+                    item.objs[0].name != 'sprig of wolfsbane' and \
+                    (not item.is_corpse() or
+                     item.monster_id in [MON.from_name(n) - nh.GLYPH_MON_OFF for n in ['lizard', 'lichen']]):
+                yield True
+                self.inventory.eat(item)
+                return
         yield False
 
     @utils.debug_log('cure_disease')

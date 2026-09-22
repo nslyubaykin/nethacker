@@ -208,15 +208,6 @@ def elbereth_action(agent, monsters):
         return []
     if not agent.can_engrave():
         return []
-    # hypothesis: engraving Elbereth before an adjacent melee exchange that is
-    # already predicted to be lethal prevents low-HP deaths across identities.
-    for monster in monsters:
-        _, my, mx, mon, _ = monster
-        if adjacent((my, mx), (agent.blstats.y, agent.blstats.x)) \
-                and mon.mname not in ONLY_RANGED_SLOW_MONSTERS \
-                and mon.mname not in WEAK_MONSTERS \
-                and imminent_death_on_melee(agent, monster):
-            return [(30, ('elbereth',))]
     adj_monsters_count = 0
     for monster in monsters:
         _, my, mx, mon, _ = monster
