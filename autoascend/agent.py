@@ -1458,6 +1458,9 @@ class Agent:
     def eat_from_inventory(self):
         if self.blstats.hunger_state < Hunger.HUNGRY:
             yield False
+        # hypothesis: retaining inventory order for safe food avoids spending
+        # turns rearranging meal priorities and preserves the established,
+        # reliable food-consumption sequence through hunger emergencies.
         for item in flatten_items(self.inventory.items):
             if item.category == nh.FOOD_CLASS and \
                     item.objs[0].name != 'sprig of wolfsbane' and \
