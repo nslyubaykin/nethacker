@@ -4,10 +4,9 @@
 ONLY_RANGED_SLOW_MONSTERS = ['floating eye', 'blue jelly', 'brown mold', 'gas spore', 'acid blob',
                              'chickatrice', 'cockatrice']
 EXPLODING_MONSTERS = ['yellow light', 'gas spore', 'flaming sphere', 'freezing sphere', 'shocking sphere']
-# hypothesis: recognizing high-damage multi-attack monsters as dangerous makes
-# the existing low-HP retreat and defensive-action policy avoid lethal exchanges.
+# hypothesis: classifying high-damage multi-attack monsters as dangerous lets the
+# existing low-health retreat policy avoid fatal melee exchanges across roles.
 DANGEROUS_MONSTERS = ['giant ant', 'killer bee', 'soldier ant', 'fire ant', 'giant beetle', 'queen bee',
-                      'rothe', 'werejackal', 'ghoul', 'giant bat', 'vampire bat',
                       'jaguar', 'leocrotta', 'tiger', 'owlbear', 'mumak']
 WEAK_MONSTERS = ['lichen', 'newt', 'shrieker', 'grid bug']
 WEIRD_MONSTERS = ['leprechaun', 'nymph']

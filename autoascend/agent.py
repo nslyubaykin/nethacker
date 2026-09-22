@@ -1112,12 +1112,8 @@ class Agent:
 
             dis = self.bfs()
 
-            # hypothesis: keep petrifying monsters in combat movement even when
-            # no ranged weapon is available, so exploration cannot walk into a
-            # fatal contact attack while trying to route around them.
-            petrifier_visible = any(monster[3].mname in ('chickatrice', 'cockatrice') for monster in monsters)
             if not monsters or all(dis > 7 for dis, *_ in monsters) or \
-                    (only_ranged_slow_monsters and not petrifier_visible and not self.inventory.get_ranged_combinations()
+                    (only_ranged_slow_monsters and not self.inventory.get_ranged_combinations()
                      and np.sum(dis != -1) > 1 and not allow_attack_all):
                 if wait_counter:
                     self.search()
@@ -1439,7 +1435,10 @@ class Agent:
                 (self.is_safe_to_pray(500) and
                  (self.blstats.hitpoints < 1 / (5 if self.blstats.experience_level < 6 else 6)
                   * self.blstats.max_hitpoints or self.blstats.hitpoints < 6))
-                or (self.is_safe_to_pray(400) and self.blstats.hunger_state >= Hunger.FAINTING)
+                # hypothesis: praying once hunger reaches WEAK prevents the long
+                # fainting sequence from turning an otherwise recoverable food
+                # shortage into starvation across all barbarian identities.
+                or (self.is_safe_to_pray(400) and self.blstats.hunger_state >= Hunger.WEAK)
         ):
             yield True
             self.pray()
