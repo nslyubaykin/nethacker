@@ -213,7 +213,9 @@ def elbereth_action(agent, monsters):
         multiplier = np.clip(20 / agent.blstats.hitpoints, 1.0, 1.5)
         if is_monster_faster(agent, monster):
             multiplier *= 2
-        if mon in WEAK_MONSTERS:
+        # hypothesis: correctly recognizing harmless adjacent monsters avoids
+        # wasting critical low-health turns engraving Elbereth at them.
+        if mon.mname in WEAK_MONSTERS:
             adj_monsters_count += 0.1 * multiplier
             continue
         adj_monsters_count += 1 * multiplier
