@@ -1416,15 +1416,18 @@ class Agent:
 
         items = [item for item in flatten_items(self.inventory.items) if item.is_unambiguous() and
                  item.category == nh.POTION_CLASS and item.object.name in ['healing', 'extra healing', 'full healing']]
-        # hypothesis: drinking a known healing potion at half health only while a
-        # hostile monster is present prevents lethal melee attrition without
-        # spending the finite supply during safe natural recovery.
-        threatened = bool(self.get_visible_monsters())
         if (
-                ((threatened and self.blstats.hitpoints < 1 / 2 * self.blstats.max_hitpoints)
-                 or self.blstats.hitpoints < 1 / 3 * self.blstats.max_hitpoints
+                (self.blstats.hitpoints < 1 / 3 * self.blstats.max_hitpoints
                  or self.blstats.hitpoints < 8) and items
         ):
+            # hypothesis: selecting the least powerful known healing potion that
+            # restores a safe combat buffer avoids wasting full healing on small
+            # deficits while still making an emergency quaff materially useful.
+            healing_amount = {'healing': 12, 'extra healing': 24, 'full healing': float('inf')}
+            target_recovery = max(0, 2 * self.blstats.max_hitpoints // 3 - self.blstats.hitpoints)
+            items.sort(key=lambda item: (
+                healing_amount[item.object.name] < target_recovery,
+                healing_amount[item.object.name]))
             yield True
             self.inventory.quaff(items[0])
             return
