@@ -27,10 +27,10 @@ def is_dangerous_monster(monster):
     _, y, x, mon, _ = monster
     is_pet = 'dog' in mon.mname or 'cat' in mon.mname or 'kitten' in mon.mname or 'pony' in mon.mname \
              or 'horse' in mon.mname
-    # 'mumak' in mon.mname or 'orc' in mon.mname or 'rothe' in mon.mname \
-    # or 'were' in mon.mname or 'unicorn' in mon.mname or 'elf' in mon.mname or 'leocrotta' in mon.mname \
-    # or 'mimic' in mon.mname
-    return is_pet or mon.mname in INSECTS
+    # hypothesis: classify fast and genuinely high-level melee monsters as
+    # dangerous so the existing retreat, engraving, and wand policies preserve
+    # health before a barbarian is in a lethal exchange.
+    return is_pet or mon.mname in INSECTS or mon.mmove >= 18 or mon.mlevel >= 4
 
 
 def consider_melee_only_ranged_if_hp_full(agent, monster):
