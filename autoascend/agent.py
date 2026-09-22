@@ -1112,8 +1112,12 @@ class Agent:
 
             dis = self.bfs()
 
+            # hypothesis: keep petrifying monsters in combat movement even when
+            # no ranged weapon is available, so exploration cannot walk into a
+            # fatal contact attack while trying to route around them.
+            petrifier_visible = any(monster[3].mname in ('chickatrice', 'cockatrice') for monster in monsters)
             if not monsters or all(dis > 7 for dis, *_ in monsters) or \
-                    (only_ranged_slow_monsters and not self.inventory.get_ranged_combinations()
+                    (only_ranged_slow_monsters and not petrifier_visible and not self.inventory.get_ranged_combinations()
                      and np.sum(dis != -1) > 1 and not allow_attack_all):
                 if wait_counter:
                     self.search()
