@@ -627,7 +627,9 @@ class GlobalLogic:
             .preempt(self.agent, [
                 self.agent.eat_corpses_from_ground(only_below_me=True).condition(lambda: self.agent.blstats.hunger_state >= Hunger.NOT_HUNGRY),
                 self.agent.eat_corpses_from_ground().every(5).condition(lambda: self.agent.blstats.hunger_state >= Hunger.NOT_HUNGRY),
-                self.agent.eat_from_inventory().every(5),
+                # hypothesis: checking carried food at every strategy boundary prevents
+                # hunger from progressing to starvation while long exploration actions run.
+                self.agent.eat_from_inventory(),
             ])
             .preempt(self.agent, [
                 self.follow_guard(),
