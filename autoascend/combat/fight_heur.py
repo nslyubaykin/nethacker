@@ -3,7 +3,6 @@ from itertools import product
 
 import numpy as np
 from scipy import signal
-import nle.nethack as nh
 
 from ..glyph import G
 from ..utils import adjacent
@@ -237,20 +236,6 @@ def wait_action(agent, monsters):
 
 def get_available_actions(agent, monsters):
     actions = []
-
-    # hypothesis: drinking an identified healing potion during a dangerous fight
-    # prevents deaths which occur before the post-combat emergency strategy gets
-    # a turn, improving survival for every Barbarian identity.
-    healing_potions = [item for item in agent.inventory.items
-                       if item.is_unambiguous() and item.category == nh.POTION_CLASS
-                       and item.object.name in ('healing', 'extra healing', 'full healing')]
-    dangerous_adjacent = any(
-        adjacent((y, x), (agent.blstats.y, agent.blstats.x))
-        and mon.mname not in WEAK_MONSTERS + ONLY_RANGED_SLOW_MONSTERS
-        for _, y, x, mon, _ in monsters)
-    if healing_potions and dangerous_adjacent and \
-            agent.blstats.hitpoints < agent.blstats.max_hitpoints / 2:
-        actions.append((35, ('quaff_healing', healing_potions[0])))
 
     # melee attack actions
     for monster in monsters:

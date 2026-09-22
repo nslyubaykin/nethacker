@@ -1151,10 +1151,6 @@ class Agent:
                     wait_counter = self._fight2_perform_action(best_action, wait_counter)
 
     def _fight2_perform_action(self, best_action, wait_counter):
-        if best_action[0] == 'quaff_healing':
-            _, potion = best_action
-            self.inventory.quaff(potion)
-            return wait_counter
         if best_action[0] == 'move':
             _, dy, dx = best_action
             target_y, target_x = self.blstats.y + dy, self.blstats.x + dx
@@ -1439,7 +1435,12 @@ class Agent:
                 (self.is_safe_to_pray(500) and
                  (self.blstats.hitpoints < 1 / (5 if self.blstats.experience_level < 6 else 6)
                   * self.blstats.max_hitpoints or self.blstats.hitpoints < 6))
-                or (self.is_safe_to_pray(400) and self.blstats.hunger_state >= Hunger.FAINTING)
+                # hypothesis: praying once hunger makes the Barbarian weak, but only
+                # after carried food is gone, prevents foodless runs from reaching
+                # the much less recoverable fainting state.
+                or (self.is_safe_to_pray(400) and self.blstats.hunger_state >= Hunger.WEAK and
+                    not any(item.is_food() and item.objs[0].name != 'sprig of wolfsbane'
+                            for item in flatten_items(self.inventory.items)))
         ):
             yield True
             self.pray()
