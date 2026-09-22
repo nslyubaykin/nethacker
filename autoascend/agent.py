@@ -1453,6 +1453,19 @@ class Agent:
 
         yield False
 
+    @utils.debug_log('emergency_healing_potion')
+    @Strategy.wrap
+    def emergency_healing_potion(self):
+        """Use an identified healing potion without waiting for combat to end."""
+        items = [item for item in flatten_items(self.inventory.items) if item.is_unambiguous() and
+                 item.category == nh.POTION_CLASS and item.object.name in
+                 ['healing', 'extra healing', 'full healing']]
+        if not ((self.blstats.hitpoints < self.blstats.max_hitpoints / 3 or
+                 self.blstats.hitpoints < 8) and items):
+            yield False
+        yield True
+        self.inventory.quaff(items[0])
+
     @utils.debug_log('eat_from_inventory')
     @Strategy.wrap
     def eat_from_inventory(self):
