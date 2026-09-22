@@ -1151,6 +1151,10 @@ class Agent:
                     wait_counter = self._fight2_perform_action(best_action, wait_counter)
 
     def _fight2_perform_action(self, best_action, wait_counter):
+        if best_action[0] == 'quaff_healing':
+            _, potion = best_action
+            self.inventory.quaff(potion)
+            return wait_counter
         if best_action[0] == 'move':
             _, dy, dx = best_action
             target_y, target_x = self.blstats.y + dy, self.blstats.x + dx
