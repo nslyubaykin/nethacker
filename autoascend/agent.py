@@ -1136,7 +1136,16 @@ class Agent:
                 actions = list(filter(lambda x: x[1][0] != 'ranged', actions))
 
             if allow_attack_all:
-                attack_actions = [a for a in actions if a[1][0] in ('melee', 'ranged', 'zap')]
+                # hypothesis: never let the anti-stall attack fallback force a
+                # bare contact attack on a petrifying monster; retaining a move
+                # action lets the combat heatmap retreat from instant death.
+                petrifying_melee = {
+                    (my - self.blstats.y, mx - self.blstats.x)
+                    for _, my, mx, mon, _ in monsters
+                    if mon.mname in combat.monster_utils.PETRIFYING_MONSTERS
+                }
+                attack_actions = [a for a in actions if a[1][0] in ('melee', 'ranged', 'zap') and
+                                  not (a[1][0] == 'melee' and a[1][1:] in petrifying_melee)]
                 if attack_actions:
                     actions = attack_actions
 
