@@ -18,7 +18,7 @@ class Item:
 
     def __init__(self, objs, glyphs, count=1, status=UNKNOWN, modifier=None, equipped=False, at_ready=False,
                  monster_id=None, shop_status=NOT_SHOP, price=0, dmg_bonus=None, to_hit_bonus=None,
-                 naming='', comment='', uses=None, text=None):
+                 naming='', comment='', uses=None, effects='', text=None):
         assert isinstance(objs, list) and len(objs) >= 1
         assert isinstance(glyphs, list) and len(glyphs) >= 1 and all((nh.glyph_is_object(g) for g in glyphs))
         assert isinstance(count, int)
@@ -30,6 +30,7 @@ class Item:
         self.modifier = modifier
         self.equipped = equipped
         self.uses = uses
+        self.effects = effects
         self.at_ready = at_ready
         self.monster_id = monster_id
         self.shop_status = shop_status
