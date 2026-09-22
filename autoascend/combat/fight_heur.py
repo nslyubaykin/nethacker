@@ -220,19 +220,6 @@ def elbereth_action(agent, monsters):
         if is_dangerous_monster(monster):
             adj_monsters_count += 2 * multiplier
 
-    # hypothesis: engraving before a low-health adjacent melee lets Barbarians
-    # disengage and reach their existing emergency recovery instead of losing a
-    # fight that monopolizes the strategy loop until death.
-    if agent.blstats.hitpoints * 3 <= agent.blstats.max_hitpoints:
-        adjacent_threats = [monster for monster in monsters
-                            if adjacent((monster[1], monster[2]),
-                                        (agent.blstats.y, agent.blstats.x))
-                            and monster[3].mname not in WEAK_MONSTERS + ONLY_RANGED_SLOW_MONSTERS]
-        if adjacent_threats:
-            # This must beat a normal melee action (priority 16), while still
-            # leaving attacks against harmless monsters alone.
-            return [(25, ('elbereth',))]
-
     player_hp_ratio = (agent.blstats.hitpoints / agent.blstats.max_hitpoints) ** 0.5
     if agent.blstats.hitpoints < 30 and adj_monsters_count > 0:
         return [(-15 + 20 * adj_monsters_count * (1 - player_hp_ratio), ('elbereth',))]
