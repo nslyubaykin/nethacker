@@ -1,7 +1,7 @@
 from ..utils import adjacent
 from . import utils
 from .monster_utils import WEAK_MONSTERS, ONLY_RANGED_SLOW_MONSTERS, consider_melee_only_ranged_if_hp_full, \
-    imminent_death_on_melee, EXPLODING_MONSTERS, WEIRD_MONSTERS
+    imminent_death_on_melee, EXPLODING_MONSTERS, WEIRD_MONSTERS, PETRIFYING_MONSTERS
 
 
 def _draw_around(priority, y, x, value, radius=1, operation='add'):
@@ -81,6 +81,13 @@ def draw_monster_priority_positive(agent, monster, priority, walkable):
 
 def draw_monster_priority_negative(agent, monster, priority, walkable):
     _, y, x, mon, _ = monster
+
+    # A cockatrice's contact attack is fatal without gloves, so unlike the other
+    # slow ranged-only monsters it must be given a berth even when no missile is
+    # currently available.
+    if mon.mname in PETRIFYING_MONSTERS:
+        _draw_around(priority, y, x, -100, radius=1)
+        _draw_around(priority, y, x, -20, radius=2)
 
     if imminent_death_on_melee(agent, monster) and not mon.mname in WEAK_MONSTERS \
             and not mon.mname in ONLY_RANGED_SLOW_MONSTERS:

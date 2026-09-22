@@ -1435,12 +1435,7 @@ class Agent:
                 (self.is_safe_to_pray(500) and
                  (self.blstats.hitpoints < 1 / (5 if self.blstats.experience_level < 6 else 6)
                   * self.blstats.max_hitpoints or self.blstats.hitpoints < 6))
-                # hypothesis: praying once hunger makes the Barbarian weak, but only
-                # after carried food is gone, prevents foodless runs from reaching
-                # the much less recoverable fainting state.
-                or (self.is_safe_to_pray(400) and self.blstats.hunger_state >= Hunger.WEAK and
-                    not any(item.is_food() and item.objs[0].name != 'sprig of wolfsbane'
-                            for item in flatten_items(self.inventory.items)))
+                or (self.is_safe_to_pray(400) and self.blstats.hunger_state >= Hunger.FAINTING)
         ):
             yield True
             self.pray()
