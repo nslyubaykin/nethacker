@@ -633,12 +633,6 @@ class GlobalLogic:
                 self.follow_guard(),
             ])
             .preempt(self.agent, [
-                # hypothesis: an identified healing potion should interrupt a
-                # lethal fight immediately, while slower emergency actions
-                # such as prayer retain their established post-combat timing.
-                self.agent.emergency_healing_potion(),
-            ])
-            .preempt(self.agent, [
                 self.agent.fight2(),
             ])
             .preempt(self.agent, [

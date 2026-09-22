@@ -1136,9 +1136,21 @@ class Agent:
                 actions = list(filter(lambda x: x[1][0] != 'ranged', actions))
 
             if allow_attack_all:
-                attack_actions = [a for a in actions if a[1][0] in ('melee', 'ranged', 'zap')]
+                # hypothesis: a search-stuck fallback must never force melee
+                # against a known petrifying monster, preserving every role's
+                # progress instead of turning an exploration deadlock fatal.
+                attack_actions = [a for a in actions if a[1][0] in ('ranged', 'zap') or
+                                  (a[1][0] == 'melee' and not any(
+                                      m[1] == self.blstats.y + a[1][1] and
+                                      m[2] == self.blstats.x + a[1][2] and
+                                      m[3].mname in ('chickatrice', 'cockatrice')
+                                      for m in monsters))]
                 if attack_actions:
                     actions = attack_actions
+                else:
+                    non_melee_actions = [a for a in actions if a[1][0] != 'melee']
+                    if non_melee_actions:
+                        actions = non_melee_actions
 
             if not actions:
                 assert 0, 'No possible action available during fight2'
@@ -1453,36 +1465,19 @@ class Agent:
 
         yield False
 
-    @utils.debug_log('emergency_healing_potion')
-    @Strategy.wrap
-    def emergency_healing_potion(self):
-        """Use an identified healing potion without waiting for combat to end."""
-        items = [item for item in flatten_items(self.inventory.items) if item.is_unambiguous() and
-                 item.category == nh.POTION_CLASS and item.object.name in
-                 ['healing', 'extra healing', 'full healing']]
-        if not ((self.blstats.hitpoints < self.blstats.max_hitpoints / 3 or
-                 self.blstats.hitpoints < 8) and items):
-            yield False
-        yield True
-        self.inventory.quaff(items[0])
-
     @utils.debug_log('eat_from_inventory')
     @Strategy.wrap
     def eat_from_inventory(self):
         if self.blstats.hunger_state < Hunger.HUNGRY:
             yield False
-        # hypothesis: choosing the most nutrition-efficient safe food first
-        # shortens hungry interruptions and prevents food supplies being spent
-        # on low-value snacks before they can avert starvation.
-        food = [item for item in flatten_items(self.inventory.items)
-                if item.category == nh.FOOD_CLASS and
-                item.objs[0].name != 'sprig of wolfsbane' and
-                (not item.is_corpse() or
-                 item.monster_id in [MON.from_name(n) - nh.GLYPH_MON_OFF for n in ['lizard', 'lichen']])]
-        for item in sorted(food, key=lambda item: item.object.nutrition / max(item.object.delay, 1), reverse=True):
-            yield True
-            self.inventory.eat(item)
-            return
+        for item in flatten_items(self.inventory.items):
+            if item.category == nh.FOOD_CLASS and \
+                    item.objs[0].name != 'sprig of wolfsbane' and \
+                    (not item.is_corpse() or
+                     item.monster_id in [MON.from_name(n) - nh.GLYPH_MON_OFF for n in ['lizard', 'lichen']]):
+                yield True
+                self.inventory.eat(item)
+                return
         yield False
 
     @utils.debug_log('cure_disease')
