@@ -220,9 +220,15 @@ def elbereth_action(agent, monsters):
         if is_dangerous_monster(monster):
             adj_monsters_count += 2 * multiplier
 
-    player_hp_ratio = (agent.blstats.hitpoints / agent.blstats.max_hitpoints) ** 0.5
-    if agent.blstats.hitpoints < 30 and adj_monsters_count > 0:
-        return [(-15 + 20 * adj_monsters_count * (1 - player_hp_ratio), ('elbereth',))]
+    # hypothesis: at critical health, writing Elbereth before trading another
+    # melee hit lets every Barbarian disengage from otherwise lethal fights.
+    # The old score was below a routine melee attack for a lone adjacent enemy,
+    # so this established escape mechanism was almost never selected when it
+    # mattered most.
+    critical_hp = (agent.blstats.hitpoints < agent.blstats.max_hitpoints / 3 or
+                   agent.blstats.hitpoints < 8)
+    if critical_hp and adj_monsters_count > 0:
+        return [(35 + 10 * adj_monsters_count, ('elbereth',))]
     return []
 
 
