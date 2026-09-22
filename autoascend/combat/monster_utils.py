@@ -1,7 +1,6 @@
 # heuristic monster types lists
-# hypothesis: treating high-difficulty monsters as dangerous at low health makes
-# every barbarian use its existing retreat, Elbereth, and wand logic before a
-# lethal melee exchange with predators, golems, and strong humanoids.
+# hypothesis: treating petrifying monsters as ranged-only prevents otherwise fatal
+# contact attacks while preserving safe ranged and wand attacks.
 ONLY_RANGED_SLOW_MONSTERS = ['floating eye', 'blue jelly', 'brown mold', 'gas spore', 'acid blob',
                              'chickatrice', 'cockatrice']
 EXPLODING_MONSTERS = ['yellow light', 'gas spore', 'flaming sphere', 'freezing sphere', 'shocking sphere']
@@ -31,10 +30,7 @@ def is_dangerous_monster(monster):
     # 'mumak' in mon.mname or 'orc' in mon.mname or 'rothe' in mon.mname \
     # or 'were' in mon.mname or 'unicorn' in mon.mname or 'elf' in mon.mname or 'leocrotta' in mon.mname \
     # or 'mimic' in mon.mname
-    # `difficulty` includes a monster's attack profile, unlike level alone.
-    # It catches the multi-attacking creatures that otherwise look harmless to
-    # the old insect/pet-only heuristic (jaguars, leocrottas, owlbears, etc.).
-    return is_pet or mon.mname in INSECTS or mon.difficulty >= 6
+    return is_pet or mon.mname in INSECTS
 
 
 def consider_melee_only_ranged_if_hp_full(agent, monster):
