@@ -1137,8 +1137,8 @@ class Agent:
 
             if allow_attack_all:
                 # hypothesis: a search-stuck fallback must never force melee
-                # against a known petrifying monster, preserving every role's
-                # progress instead of turning an exploration deadlock fatal.
+                # against a known petrifying monster, preserving progress for
+                # every identity rather than converting exploration into death.
                 attack_actions = [a for a in actions if a[1][0] in ('ranged', 'zap') or
                                   (a[1][0] == 'melee' and not any(
                                       m[1] == self.blstats.y + a[1][1] and
