@@ -283,8 +283,7 @@ class ItemManager:
             _, info, _,
             _, shop_status, _, _, shop_price
         ) = matches[0]
-        # Keep the visible adjective (for example, "rotted") because it can
-        # change whether otherwise safe-looking food is lethal.
+        # TODO: effects, uses
 
         if info in {'being worn', 'being worn; slippery', 'wielded', 'chained to you'} or info.startswith(
                 'weapon in ') or \
@@ -485,7 +484,7 @@ class ItemManager:
 
         return (
             objs, ret_glyphs, count, status, modifier, equipped, at_ready, monster_id, shop_status, shop_price,
-            dmg_bonus, to_hit_bonus, naming, comment, uses, effects2.strip()
+            dmg_bonus, to_hit_bonus, naming, comment, uses
         )
 
     @staticmethod

@@ -1359,10 +1359,7 @@ class Agent:
                 return
             for item in self.inventory.items_below_me:
                 if item.is_corpse() and item.monster_id == monster_id:
-                    # hypothesis: preserving the parsed "rotted" adjective
-                    # prevents poisonous old-corpse meals while retaining
-                    # fresh corpse nutrition for every barbarian identity.
-                    if self._is_corpse_editable(monster_id, corpse_age) and 'rotted' not in item.effects:
+                    if self._is_corpse_editable(monster_id, corpse_age):
                         if not yielded:
                             yielded = True
                             yield True
@@ -1419,9 +1416,16 @@ class Agent:
 
         items = [item for item in flatten_items(self.inventory.items) if item.is_unambiguous() and
                  item.category == nh.POTION_CLASS and item.object.name in ['healing', 'extra healing', 'full healing']]
+        nearby_hostile = any(distance <= 7 for distance, *_ in self.get_visible_monsters())
         if (
-                (self.blstats.hitpoints < 1 / 3 * self.blstats.max_hitpoints
-                 or self.blstats.hitpoints < 8) and items
+                # hypothesis: spending identified healing while a hostile is
+                # already in fighting range prevents lethal melee exchanges,
+                # while retaining scarce potions during safe recovery.
+                ((self.blstats.hitpoints < 1 / 3 * self.blstats.max_hitpoints or
+                  self.blstats.hitpoints < 8) or
+                 (nearby_hostile and
+                  (self.blstats.hitpoints < 1 / 2 * self.blstats.max_hitpoints or
+                   self.blstats.hitpoints < 10))) and items
         ):
             yield True
             self.inventory.quaff(items[0])
