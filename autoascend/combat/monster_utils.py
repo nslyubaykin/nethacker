@@ -20,7 +20,10 @@ def is_monster_faster(agent, monster):
 def imminent_death_on_melee(agent, monster):
     if is_dangerous_monster(monster):
         return agent.blstats.hitpoints <= 16
-    return agent.blstats.hitpoints <= 8
+    # hypothesis: reserving a 12-HP buffer against ordinary melee attackers
+    # lets the existing retreat policy avoid lethal damage-roll spikes from
+    # otherwise unremarkable early-dungeon monsters.
+    return agent.blstats.hitpoints <= 12
 
 
 def is_dangerous_monster(monster):
