@@ -3,9 +3,6 @@
 # contact attacks while preserving safe ranged and wand attacks.
 ONLY_RANGED_SLOW_MONSTERS = ['floating eye', 'blue jelly', 'brown mold', 'gas spore', 'acid blob',
                              'chickatrice', 'cockatrice']
-# hypothesis: assigning a strong movement penalty around petrifying monsters keeps
-# ungloved Barbarians from taking an otherwise instantly fatal contact attack.
-PETRIFYING_MONSTERS = ['chickatrice', 'cockatrice']
 EXPLODING_MONSTERS = ['yellow light', 'gas spore', 'flaming sphere', 'freezing sphere', 'shocking sphere']
 # hypothesis: treating high-damage multiattack monsters as dangerous makes the
 # existing low-health retreat and defensive actions engage before they kill.
