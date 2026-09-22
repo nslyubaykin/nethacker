@@ -1112,8 +1112,14 @@ class Agent:
 
             dis = self.bfs()
 
+            # hypothesis: when an unarmed Barbarian is next to a petrifier, retain
+            # combat control for one escape move rather than handing that turn to
+            # generic exploration, which can choose a fatal contact attack.
+            petrifier_adjacent = any(
+                mon.mname in ('chickatrice', 'cockatrice') and dis <= 1
+                for dis, _, _, mon, _ in monsters)
             if not monsters or all(dis > 7 for dis, *_ in monsters) or \
-                    (only_ranged_slow_monsters and not self.inventory.get_ranged_combinations()
+                    (only_ranged_slow_monsters and not petrifier_adjacent and not self.inventory.get_ranged_combinations()
                      and np.sum(dis != -1) > 1 and not allow_attack_all):
                 if wait_counter:
                     self.search()
