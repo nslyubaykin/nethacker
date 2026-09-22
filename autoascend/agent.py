@@ -1417,9 +1417,7 @@ class Agent:
         items = [item for item in flatten_items(self.inventory.items) if item.is_unambiguous() and
                  item.category == nh.POTION_CLASS and item.object.name in ['healing', 'extra healing', 'full healing']]
         if (
-                # hypothesis: using a known healing potion at half health gives the
-                # combat loop enough buffer to survive ordinary melee attrition.
-                (self.blstats.hitpoints < 1 / 2 * self.blstats.max_hitpoints
+                (self.blstats.hitpoints < 1 / 3 * self.blstats.max_hitpoints
                  or self.blstats.hitpoints < 8) and items
         ):
             yield True
