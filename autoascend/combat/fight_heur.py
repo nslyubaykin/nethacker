@@ -7,7 +7,8 @@ from scipy import signal
 from ..glyph import G
 from ..utils import adjacent
 from .monster_utils import is_monster_faster, is_dangerous_monster, \
-    ONLY_RANGED_SLOW_MONSTERS, EXPLODING_MONSTERS, WEAK_MONSTERS, consider_melee_only_ranged_if_hp_full
+    ONLY_RANGED_SLOW_MONSTERS, EXPLODING_MONSTERS, WEAK_MONSTERS, consider_melee_only_ranged_if_hp_full, \
+    imminent_death_on_melee
 from .movement_priority import draw_monster_priority_positive, draw_monster_priority_negative
 from .utils import wielding_ranged_weapon, line_dis_from, inside
 
@@ -17,6 +18,10 @@ def melee_monster_priority(agent, monsters, monster):
     ret = 1
     if agent.blstats.hitpoints > 8 or is_monster_faster(agent, monster):
         ret += 15
+    # hypothesis: when the movement policy identifies a melee exchange as
+    # potentially lethal, prefer its retreat route over taking one more hit.
+    if imminent_death_on_melee(agent, monster):
+        ret -= 20
     if wielding_ranged_weapon(agent) and not is_monster_faster(agent, monster):
         ret -= 6
     if mon.mname in EXPLODING_MONSTERS:
@@ -220,15 +225,9 @@ def elbereth_action(agent, monsters):
         if is_dangerous_monster(monster):
             adj_monsters_count += 2 * multiplier
 
-    # hypothesis: at critical health, writing Elbereth before trading another
-    # melee hit lets every Barbarian disengage from otherwise lethal fights.
-    # The old score was below a routine melee attack for a lone adjacent enemy,
-    # so this established escape mechanism was almost never selected when it
-    # mattered most.
-    critical_hp = (agent.blstats.hitpoints < agent.blstats.max_hitpoints / 3 or
-                   agent.blstats.hitpoints < 8)
-    if critical_hp and adj_monsters_count > 0:
-        return [(35 + 10 * adj_monsters_count, ('elbereth',))]
+    player_hp_ratio = (agent.blstats.hitpoints / agent.blstats.max_hitpoints) ** 0.5
+    if agent.blstats.hitpoints < 30 and adj_monsters_count > 0:
+        return [(-15 + 20 * adj_monsters_count * (1 - player_hp_ratio), ('elbereth',))]
     return []
 
 
