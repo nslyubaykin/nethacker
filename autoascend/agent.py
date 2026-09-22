@@ -1417,10 +1417,7 @@ class Agent:
         items = [item for item in flatten_items(self.inventory.items) if item.is_unambiguous() and
                  item.category == nh.POTION_CLASS and item.object.name in ['healing', 'extra healing', 'full healing']]
         if (
-                # hypothesis: using identified healing before health falls below 40%
-                # prevents ordinary multi-damage melee turns from ending otherwise
-                # recoverable Barbarian runs.
-                (self.blstats.hitpoints < 2 / 5 * self.blstats.max_hitpoints
+                (self.blstats.hitpoints < 1 / 3 * self.blstats.max_hitpoints
                  or self.blstats.hitpoints < 8) and items
         ):
             yield True
