@@ -4,10 +4,7 @@
 ONLY_RANGED_SLOW_MONSTERS = ['floating eye', 'blue jelly', 'brown mold', 'gas spore', 'acid blob',
                              'chickatrice', 'cockatrice']
 EXPLODING_MONSTERS = ['yellow light', 'gas spore', 'flaming sphere', 'freezing sphere', 'shocking sphere']
-# hypothesis: classifying high-damage multi-attack monsters as dangerous lets the
-# existing low-health retreat policy avoid fatal melee exchanges across roles.
-DANGEROUS_MONSTERS = ['giant ant', 'killer bee', 'soldier ant', 'fire ant', 'giant beetle', 'queen bee',
-                      'jaguar', 'leocrotta', 'tiger', 'owlbear', 'mumak']
+INSECTS = ['giant ant', 'killer bee', 'soldier ant', 'fire ant', 'giant beetle', 'queen bee']
 WEAK_MONSTERS = ['lichen', 'newt', 'shrieker', 'grid bug']
 WEIRD_MONSTERS = ['leprechaun', 'nymph']
 
@@ -23,10 +20,7 @@ def is_monster_faster(agent, monster):
 def imminent_death_on_melee(agent, monster):
     if is_dangerous_monster(monster):
         return agent.blstats.hitpoints <= 16
-    # hypothesis: retreating at 12 HP against ordinary monsters preserves a
-    # full hit of buffer before melee becomes fatal, improving early survival
-    # for every barbarian identity without changing normal full-health combat.
-    return agent.blstats.hitpoints <= 12
+    return agent.blstats.hitpoints <= 8
 
 
 def is_dangerous_monster(monster):
@@ -36,7 +30,7 @@ def is_dangerous_monster(monster):
     # 'mumak' in mon.mname or 'orc' in mon.mname or 'rothe' in mon.mname \
     # or 'were' in mon.mname or 'unicorn' in mon.mname or 'elf' in mon.mname or 'leocrotta' in mon.mname \
     # or 'mimic' in mon.mname
-    return is_pet or mon.mname in DANGEROUS_MONSTERS
+    return is_pet or mon.mname in INSECTS
 
 
 def consider_melee_only_ranged_if_hp_full(agent, monster):
