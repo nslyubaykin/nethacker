@@ -33,9 +33,7 @@ def is_dangerous_monster(monster):
     # 'mumak' in mon.mname or 'orc' in mon.mname or 'rothe' in mon.mname \
     # or 'were' in mon.mname or 'unicorn' in mon.mname or 'elf' in mon.mname or 'leocrotta' in mon.mname \
     # or 'mimic' in mon.mname
-    # hypothesis: treating lycanthropes as high-danger melee opponents makes the
-    # low-health retreat policy avoid their repeated attacks and disease risk.
-    return is_pet or mon.mname in DANGEROUS_MONSTERS or 'were' in mon.mname
+    return is_pet or mon.mname in DANGEROUS_MONSTERS
 
 
 def consider_melee_only_ranged_if_hp_full(agent, monster):

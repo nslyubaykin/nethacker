@@ -1458,14 +1458,17 @@ class Agent:
     def eat_from_inventory(self):
         if self.blstats.hunger_state < Hunger.HUNGRY:
             yield False
-        for item in flatten_items(self.inventory.items):
-            if item.category == nh.FOOD_CLASS and \
-                    item.objs[0].name != 'sprig of wolfsbane' and \
-                    (not item.is_corpse() or
-                     item.monster_id in [MON.from_name(n) - nh.GLYPH_MON_OFF for n in ['lizard', 'lichen']]):
-                yield True
-                self.inventory.eat(item)
-                return
+        food = [item for item in flatten_items(self.inventory.items)
+                if item.category == nh.FOOD_CLASS and
+                item.objs[0].name != 'sprig of wolfsbane' and
+                (not item.is_corpse() or
+                 item.monster_id in [MON.from_name(n) - nh.GLYPH_MON_OFF for n in ['lizard', 'lichen']])]
+        # hypothesis: eating the most nutrition-efficient safe carried food first
+        # preserves hunger reserves and reduces vulnerable eating turns across roles.
+        for item in sorted(food, key=lambda item: item.objs[0].nutrition / max(item.objs[0].delay, 1), reverse=True):
+            yield True
+            self.inventory.eat(item)
+            return
         yield False
 
     @utils.debug_log('cure_disease')
