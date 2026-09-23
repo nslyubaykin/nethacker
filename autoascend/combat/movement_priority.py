@@ -122,9 +122,6 @@ def draw_monster_priority_negative(agent, monster, priority, walkable):
         if len(agent.inventory.get_ranged_combinations()):
             _draw_ranged(priority, y, x, 6, walkable, radius=7)
     elif mon.mname in ONLY_RANGED_SLOW_MONSTERS:  # and agent.inventory.get_ranged_combinations():
-        # A bare-handed barbarian cannot safely clear a cockatrice.  Give fight2
-        # a direction away from it until it is out of sight instead of handing
-        # control back to exploration, which may path through the monster.
         if mon.mname in PETRIFYING_MONSTERS:
             _draw_around(priority, y, x, -10, radius=1)
             _draw_around(priority, y, x, -5, radius=2)
