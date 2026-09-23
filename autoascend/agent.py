@@ -1109,12 +1109,15 @@ class Agent:
                                              and not combat.monster_utils.consider_melee_only_ranged_if_hp_full(self,
                                                                                                                 monster)
                                              for monster in monsters])
+            petrifier_nearby = any(monster[0] <= 2 and
+                                    monster[3].mname in combat.monster_utils.PETRIFYING_MONSTERS
+                                    for monster in monsters)
 
             dis = self.bfs()
 
             if not monsters or all(dis > 7 for dis, *_ in monsters) or \
                     (only_ranged_slow_monsters and not self.inventory.get_ranged_combinations()
-                     and np.sum(dis != -1) > 1 and not allow_attack_all):
+                     and np.sum(dis != -1) > 1 and not allow_attack_all and not petrifier_nearby):
                 if wait_counter:
                     self.search()
                     wait_counter -= 1
@@ -1416,17 +1419,9 @@ class Agent:
 
         items = [item for item in flatten_items(self.inventory.items) if item.is_unambiguous() and
                  item.category == nh.POTION_CLASS and item.object.name in ['healing', 'extra healing', 'full healing']]
-        adjacent_hostile = any(
-            monster[0] <= 1 and monster[3].mname not in combat.monster_utils.WEAK_MONSTERS
-            for monster in self.get_visible_monsters()
-        )
-        # hypothesis: drinking an identified healing potion at half health when a
-        # hostile is already adjacent prevents a single multi-attack melee turn
-        # from killing the barbarian, while preserving potions outside combat.
         if (
                 (self.blstats.hitpoints < 1 / 3 * self.blstats.max_hitpoints
-                 or self.blstats.hitpoints < 8
-                 or (adjacent_hostile and self.blstats.hitpoints < 1 / 2 * self.blstats.max_hitpoints)) and items
+                 or self.blstats.hitpoints < 8) and items
         ):
             yield True
             self.inventory.quaff(items[0])

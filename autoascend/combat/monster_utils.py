@@ -3,11 +3,17 @@
 # contact attacks while preserving safe ranged and wand attacks.
 ONLY_RANGED_SLOW_MONSTERS = ['floating eye', 'blue jelly', 'brown mold', 'gas spore', 'acid blob',
                              'chickatrice', 'cockatrice']
+# hypothesis: keeping an unarmed barbarian in combat long enough to retreat
+# from a visible contact-petrifier prevents exploration from pathing into a
+# cockatrice or chickatrice when no safe ranged attack is available.
+PETRIFYING_MONSTERS = ['chickatrice', 'cockatrice']
 EXPLODING_MONSTERS = ['yellow light', 'gas spore', 'flaming sphere', 'freezing sphere', 'shocking sphere']
-# hypothesis: classifying high-damage multi-attack monsters as dangerous lets the
-# existing low-health retreat policy avoid fatal melee exchanges across roles.
+# hypothesis: treating common early multi-attack monsters as dangerous at a
+# larger safety margin lets every barbarian retreat before one melee turn can
+# consume its remaining hit points.
 DANGEROUS_MONSTERS = ['giant ant', 'killer bee', 'soldier ant', 'fire ant', 'giant beetle', 'queen bee',
-                      'jaguar', 'leocrotta', 'tiger', 'owlbear', 'mumak']
+                      'jaguar', 'leocrotta', 'tiger', 'owlbear', 'mumak',
+                      'rothe', 'large kobold', 'werejackal', 'wererat']
 WEAK_MONSTERS = ['lichen', 'newt', 'shrieker', 'grid bug']
 WEIRD_MONSTERS = ['leprechaun', 'nymph']
 
@@ -22,7 +28,7 @@ def is_monster_faster(agent, monster):
 
 def imminent_death_on_melee(agent, monster):
     if is_dangerous_monster(monster):
-        return agent.blstats.hitpoints <= 16
+        return agent.blstats.hitpoints <= 24
     return agent.blstats.hitpoints <= 8
 
 
