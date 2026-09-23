@@ -1416,11 +1416,8 @@ class Agent:
 
         items = [item for item in flatten_items(self.inventory.items) if item.is_unambiguous() and
                  item.category == nh.POTION_CLASS and item.object.name in ['healing', 'extra healing', 'full healing']]
-        # hypothesis: using an identified healing potion at half health leaves a
-        # buffer for the next melee hit, preventing low-HP deaths across the
-        # fragile barbarian variants before the old last-moment trigger runs.
         if (
-                (self.blstats.hitpoints < 1 / 2 * self.blstats.max_hitpoints
+                (self.blstats.hitpoints < 1 / 3 * self.blstats.max_hitpoints
                  or self.blstats.hitpoints < 8) and items
         ):
             yield True
@@ -1434,10 +1431,12 @@ class Agent:
             self.inventory.quaff(items[0])
             return
 
+        # hypothesis: praying at one third health, while the existing cooldown says
+        # it is safe, leaves a barbarian enough buffer for the next melee hit and
+        # prevents the common low-HP deaths across every starting identity.
         if (
                 (self.is_safe_to_pray(500) and
-                 (self.blstats.hitpoints < 1 / (5 if self.blstats.experience_level < 6 else 6)
-                  * self.blstats.max_hitpoints or self.blstats.hitpoints < 6))
+                 (self.blstats.hitpoints < 1 / 3 * self.blstats.max_hitpoints or self.blstats.hitpoints < 8))
                 or (self.is_safe_to_pray(400) and self.blstats.hunger_state >= Hunger.FAINTING)
         ):
             yield True
