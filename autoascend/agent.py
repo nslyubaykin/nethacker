@@ -1110,7 +1110,7 @@ class Agent:
                                                                                                                 monster)
                                              for monster in monsters])
             petrifier_nearby = any(monster[0] <= 2 and
-                                    monster[3].mname in combat.movement_priority.PETRIFYING_MONSTERS
+                                    monster[3].mname in combat.monster_utils.PETRIFYING_MONSTERS
                                     for monster in monsters)
 
             dis = self.bfs()
