@@ -4,6 +4,12 @@ from .monster_utils import WEAK_MONSTERS, ONLY_RANGED_SLOW_MONSTERS, consider_me
     imminent_death_on_melee, EXPLODING_MONSTERS, WEIRD_MONSTERS
 
 
+# hypothesis: retreating while a contact-petrifying monster is visible prevents
+# exploration from pathing into a monster that the combat policy correctly refuses
+# to melee.
+PETRIFYING_MONSTERS = ['chickatrice', 'cockatrice']
+
+
 def _draw_around(priority, y, x, value, radius=1, operation='add'):
     # TODO: optimize
     for y1 in range(y - radius, y + radius + 1):
@@ -122,8 +128,9 @@ def draw_monster_priority_negative(agent, monster, priority, walkable):
         if len(agent.inventory.get_ranged_combinations()):
             _draw_ranged(priority, y, x, 6, walkable, radius=7)
     elif mon.mname in ONLY_RANGED_SLOW_MONSTERS:  # and agent.inventory.get_ranged_combinations():
-        # ignore
-        pass
+        if mon.mname in PETRIFYING_MONSTERS:
+            _draw_around(priority, y, x, -10, radius=1)
+            _draw_around(priority, y, x, -5, radius=2)
     elif 'unicorn' in mon.mname:
         pass
     else:
