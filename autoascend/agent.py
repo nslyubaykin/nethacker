@@ -1104,18 +1104,6 @@ class Agent:
         wait_counter = 0
         while 1:
             monsters = self.get_visible_monsters()
-            # hypothesis: yielding combat to the existing emergency potion action
-            # at critical health prevents otherwise unavoidable lethal melee turns.
-            # Fight2 normally preempts emergency_strategy for as long as a nearby
-            # monster is visible, so waiting for combat to end makes the potion
-            # threshold ineffective precisely when it is needed.
-            emergency_potions = [item for item in flatten_items(self.inventory.items)
-                                  if item.is_unambiguous() and item.category == nh.POTION_CLASS
-                                  and item.object.name in ['healing', 'extra healing', 'full healing']]
-            if not yielded and emergency_potions and \
-                    (self.blstats.hitpoints < self.blstats.max_hitpoints / 3 or self.blstats.hitpoints < 8):
-                yield False
-                return
             allow_attack_all = self._last_turn - self._allow_attack_all_turn < 3
             only_ranged_slow_monsters = all([monster[3].mname in combat.monster_utils.ONLY_RANGED_SLOW_MONSTERS
                                              and not combat.monster_utils.consider_melee_only_ranged_if_hp_full(self,
