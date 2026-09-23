@@ -1435,7 +1435,10 @@ class Agent:
                 (self.is_safe_to_pray(500) and
                  (self.blstats.hitpoints < 1 / (5 if self.blstats.experience_level < 6 else 6)
                   * self.blstats.max_hitpoints or self.blstats.hitpoints < 6))
-                or (self.is_safe_to_pray(400) and self.blstats.hunger_state >= Hunger.FAINTING)
+                # hypothesis: praying while weak, rather than waiting until fainting,
+                # lets a safely available prayer restore nutrition before involuntary
+                # fainting consumes the remaining turns needed to recover food.
+                or (self.is_safe_to_pray(400) and self.blstats.hunger_state >= Hunger.WEAK)
         ):
             yield True
             self.pray()
@@ -1458,18 +1461,14 @@ class Agent:
     def eat_from_inventory(self):
         if self.blstats.hunger_state < Hunger.HUNGRY:
             yield False
-        # hypothesis: choosing the most nutrition-efficient safe food first
-        # shortens hungry interruptions and prevents food supplies being spent
-        # on low-value snacks before they can avert starvation.
-        food = [item for item in flatten_items(self.inventory.items)
-                if item.category == nh.FOOD_CLASS and
-                item.objs[0].name != 'sprig of wolfsbane' and
-                (not item.is_corpse() or
-                 item.monster_id in [MON.from_name(n) - nh.GLYPH_MON_OFF for n in ['lizard', 'lichen']])]
-        for item in sorted(food, key=lambda item: item.object.nutrition / max(item.object.delay, 1), reverse=True):
-            yield True
-            self.inventory.eat(item)
-            return
+        for item in flatten_items(self.inventory.items):
+            if item.category == nh.FOOD_CLASS and \
+                    item.objs[0].name != 'sprig of wolfsbane' and \
+                    (not item.is_corpse() or
+                     item.monster_id in [MON.from_name(n) - nh.GLYPH_MON_OFF for n in ['lizard', 'lichen']]):
+                yield True
+                self.inventory.eat(item)
+                return
         yield False
 
     @utils.debug_log('cure_disease')
