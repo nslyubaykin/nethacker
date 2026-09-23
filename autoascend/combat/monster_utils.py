@@ -3,13 +3,17 @@
 # contact attacks while preserving safe ranged and wand attacks.
 ONLY_RANGED_SLOW_MONSTERS = ['floating eye', 'blue jelly', 'brown mold', 'gas spore', 'acid blob',
                              'chickatrice', 'cockatrice']
+# hypothesis: actively retreating from contact-petrifying monsters, rather than
+# returning to exploration when no missile is available, prevents fatal accidental
+# melee while the slow monster is still nearby.
+PETRIFYING_MONSTERS = ['chickatrice', 'cockatrice']
 EXPLODING_MONSTERS = ['yellow light', 'gas spore', 'flaming sphere', 'freezing sphere', 'shocking sphere']
-# hypothesis: treating common early multi-attack monsters as dangerous at a
-# larger safety margin lets every barbarian retreat before one melee turn can
-# consume its remaining hit points.
+# hypothesis: recognizing common early multi-attack enemies and retreating below
+# a moderate health reserve prevents lethal melee bursts without making every
+# wounded barbarian evade deep-dungeon fights for too long.
 DANGEROUS_MONSTERS = ['giant ant', 'killer bee', 'soldier ant', 'fire ant', 'giant beetle', 'queen bee',
                       'jaguar', 'leocrotta', 'tiger', 'owlbear', 'mumak',
-                      'rothe', 'large kobold', 'werejackal', 'wererat']
+                      'rothe', 'large kobold', 'werejackal', 'wererat', 'vampire bat']
 WEAK_MONSTERS = ['lichen', 'newt', 'shrieker', 'grid bug']
 WEIRD_MONSTERS = ['leprechaun', 'nymph']
 
