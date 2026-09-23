@@ -3,16 +3,11 @@
 # contact attacks while preserving safe ranged and wand attacks.
 ONLY_RANGED_SLOW_MONSTERS = ['floating eye', 'blue jelly', 'brown mold', 'gas spore', 'acid blob',
                              'chickatrice', 'cockatrice']
-# hypothesis: actively retreating from contact-petrifying monsters, rather than
-# returning to exploration when no missile is available, prevents fatal accidental
-# melee while the slow monster is still nearby.
-PETRIFYING_MONSTERS = ['chickatrice', 'cockatrice']
 EXPLODING_MONSTERS = ['yellow light', 'gas spore', 'flaming sphere', 'freezing sphere', 'shocking sphere']
-# hypothesis: classifying common early high-risk melee monsters as dangerous and
-# retreating below a multi-hit safety margin avoids fatal early exchanges across roles.
+# hypothesis: classifying high-damage multi-attack monsters as dangerous lets the
+# existing low-health retreat policy avoid fatal melee exchanges across roles.
 DANGEROUS_MONSTERS = ['giant ant', 'killer bee', 'soldier ant', 'fire ant', 'giant beetle', 'queen bee',
-                      'jaguar', 'leocrotta', 'tiger', 'owlbear', 'mumak',
-                      'rothe', 'large kobold', 'werejackal', 'wererat']
+                      'jaguar', 'leocrotta', 'tiger', 'owlbear', 'mumak']
 WEAK_MONSTERS = ['lichen', 'newt', 'shrieker', 'grid bug']
 WEIRD_MONSTERS = ['leprechaun', 'nymph']
 
@@ -27,9 +22,7 @@ def is_monster_faster(agent, monster):
 
 def imminent_death_on_melee(agent, monster):
     if is_dangerous_monster(monster):
-        # Several early threats (notably rothes) can land multiple attacks in
-        # one turn, so a 16-HP margin still permits a lethal exchange.
-        return agent.blstats.hitpoints <= 24
+        return agent.blstats.hitpoints <= 16
     return agent.blstats.hitpoints <= 8
 
 
