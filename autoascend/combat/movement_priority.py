@@ -1,7 +1,7 @@
 from ..utils import adjacent
 from . import utils
 from .monster_utils import WEAK_MONSTERS, ONLY_RANGED_SLOW_MONSTERS, consider_melee_only_ranged_if_hp_full, \
-    imminent_death_on_melee, EXPLODING_MONSTERS, WEIRD_MONSTERS
+    imminent_death_on_melee, EXPLODING_MONSTERS, WEIRD_MONSTERS, PETRIFYING_MONSTERS
 
 
 def _draw_around(priority, y, x, value, radius=1, operation='add'):
@@ -121,6 +121,14 @@ def draw_monster_priority_negative(agent, monster, priority, walkable):
         # prioritize staying in ranged weapons line of fire
         if len(agent.inventory.get_ranged_combinations()):
             _draw_ranged(priority, y, x, 6, walkable, radius=7)
+    elif mon.mname in PETRIFYING_MONSTERS:
+        # hypothesis: actively retreating from a visible petrifier when no
+        # projectile is available avoids fatal incidental contact for every
+        # barbarian identity.
+        # A barbarian without missiles must still spend a combat turn retreating:
+        # returning control to exploration here can walk it into a lethal contact.
+        _draw_around(priority, y, x, -20, radius=1)
+        _draw_around(priority, y, x, -5, radius=2)
     elif mon.mname in ONLY_RANGED_SLOW_MONSTERS:  # and agent.inventory.get_ranged_combinations():
         # ignore
         pass

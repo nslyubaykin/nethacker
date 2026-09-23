@@ -1109,11 +1109,13 @@ class Agent:
                                              and not combat.monster_utils.consider_melee_only_ranged_if_hp_full(self,
                                                                                                                 monster)
                                              for monster in monsters])
+            petrifier_visible = any(monster[3].mname in combat.monster_utils.PETRIFYING_MONSTERS
+                                    for monster in monsters)
 
             dis = self.bfs()
 
             if not monsters or all(dis > 7 for dis, *_ in monsters) or \
-                    (only_ranged_slow_monsters and not self.inventory.get_ranged_combinations()
+                    (only_ranged_slow_monsters and not petrifier_visible and not self.inventory.get_ranged_combinations()
                      and np.sum(dis != -1) > 1 and not allow_attack_all):
                 if wait_counter:
                     self.search()
@@ -1416,16 +1418,9 @@ class Agent:
 
         items = [item for item in flatten_items(self.inventory.items) if item.is_unambiguous() and
                  item.category == nh.POTION_CLASS and item.object.name in ['healing', 'extra healing', 'full healing']]
-        # hypothesis: using a known healing potion while an enemy is already adjacent
-        # prevents low-HP melee exchanges from becoming sudden deaths across roles.
-        adjacent_enemy = any(
-            utils.adjacent((self.blstats.y, self.blstats.x), (y, x))
-            for _, y, x, _, _ in self.get_visible_monsters()
-        )
         if (
                 (self.blstats.hitpoints < 1 / 3 * self.blstats.max_hitpoints
-                 or self.blstats.hitpoints < 8
-                 or (adjacent_enemy and self.blstats.hitpoints < 1 / 2 * self.blstats.max_hitpoints)) and items
+                 or self.blstats.hitpoints < 8) and items
         ):
             yield True
             self.inventory.quaff(items[0])
@@ -1465,18 +1460,14 @@ class Agent:
     def eat_from_inventory(self):
         if self.blstats.hunger_state < Hunger.HUNGRY:
             yield False
-        # hypothesis: choosing the most nutrition-efficient safe food first
-        # shortens hungry interruptions and prevents food supplies being spent
-        # on low-value snacks before they can avert starvation.
-        food = [item for item in flatten_items(self.inventory.items)
-                if item.category == nh.FOOD_CLASS and
-                item.objs[0].name != 'sprig of wolfsbane' and
-                (not item.is_corpse() or
-                 item.monster_id in [MON.from_name(n) - nh.GLYPH_MON_OFF for n in ['lizard', 'lichen']])]
-        for item in sorted(food, key=lambda item: item.object.nutrition / max(item.object.delay, 1), reverse=True):
-            yield True
-            self.inventory.eat(item)
-            return
+        for item in flatten_items(self.inventory.items):
+            if item.category == nh.FOOD_CLASS and \
+                    item.objs[0].name != 'sprig of wolfsbane' and \
+                    (not item.is_corpse() or
+                     item.monster_id in [MON.from_name(n) - nh.GLYPH_MON_OFF for n in ['lizard', 'lichen']]):
+                yield True
+                self.inventory.eat(item)
+                return
         yield False
 
     @utils.debug_log('cure_disease')

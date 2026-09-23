@@ -1,8 +1,9 @@
 # heuristic monster types lists
 # hypothesis: treating petrifying monsters as ranged-only prevents otherwise fatal
 # contact attacks while preserving safe ranged and wand attacks.
+PETRIFYING_MONSTERS = ['chickatrice', 'cockatrice']
 ONLY_RANGED_SLOW_MONSTERS = ['floating eye', 'blue jelly', 'brown mold', 'gas spore', 'acid blob',
-                             'chickatrice', 'cockatrice']
+                             *PETRIFYING_MONSTERS]
 EXPLODING_MONSTERS = ['yellow light', 'gas spore', 'flaming sphere', 'freezing sphere', 'shocking sphere']
 INSECTS = ['giant ant', 'killer bee', 'soldier ant', 'fire ant', 'giant beetle', 'queen bee']
 WEAK_MONSTERS = ['lichen', 'newt', 'shrieker', 'grid bug']
