@@ -515,11 +515,7 @@ class GlobalLogic:
         while 1:
             explore_stairs_condition = lambda: False
             if self.milestone == Milestone.BE_ON_FIRST_LEVEL:
-                # hypothesis: leaving the first dungeon level at level 6 avoids
-                # prolonged low-value farming that exhausts food and hit points,
-                # while still giving every barbarian enough early combat strength
-                # to make steady progress through the dungeon.
-                condition = lambda: self.agent.blstats.experience_level >= 6
+                condition = lambda: self.agent.blstats.experience_level >= 8
                 # explore_stairs_condition = lambda: self.agent.inventory.items.total_nutrition() == 0 and \
                 #                                    self.agent.blstats.hunger_state >= Hunger.NOT_HUNGRY
                 level = (Level.DUNGEONS_OF_DOOM, 1)
@@ -619,10 +615,7 @@ class GlobalLogic:
             ])
             .preempt(self.agent, [
                 self.offer_corpses().preempt(self.agent, [
-                    # hypothesis: postponing optional corpse meals until actually hungry
-                    # avoids spending vulnerable turns eating for no immediate survival
-                    # benefit, while retaining corpses as an emergency food reserve.
-                    self.agent.eat_corpses_from_ground().condition(lambda: self.agent.blstats.hunger_state >= Hunger.HUNGRY),
+                    self.agent.eat_corpses_from_ground().condition(lambda: self.agent.blstats.hunger_state >= Hunger.NOT_HUNGRY),
                 ]),
             ])
             .preempt(self.agent, [
@@ -632,8 +625,8 @@ class GlobalLogic:
                 self.agent.cure_disease().every(5),
             ])
             .preempt(self.agent, [
-                self.agent.eat_corpses_from_ground(only_below_me=True).condition(lambda: self.agent.blstats.hunger_state >= Hunger.HUNGRY),
-                self.agent.eat_corpses_from_ground().every(5).condition(lambda: self.agent.blstats.hunger_state >= Hunger.HUNGRY),
+                self.agent.eat_corpses_from_ground(only_below_me=True).condition(lambda: self.agent.blstats.hunger_state >= Hunger.NOT_HUNGRY),
+                self.agent.eat_corpses_from_ground().every(5).condition(lambda: self.agent.blstats.hunger_state >= Hunger.NOT_HUNGRY),
                 self.agent.eat_from_inventory().every(5),
             ])
             .preempt(self.agent, [
