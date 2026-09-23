@@ -619,7 +619,10 @@ class GlobalLogic:
             ])
             .preempt(self.agent, [
                 self.offer_corpses().preempt(self.agent, [
-                    self.agent.eat_corpses_from_ground().condition(lambda: self.agent.blstats.hunger_state >= Hunger.NOT_HUNGRY),
+                    # hypothesis: postponing optional corpse meals until actually hungry
+                    # avoids spending vulnerable turns eating for no immediate survival
+                    # benefit, while retaining corpses as an emergency food reserve.
+                    self.agent.eat_corpses_from_ground().condition(lambda: self.agent.blstats.hunger_state >= Hunger.HUNGRY),
                 ]),
             ])
             .preempt(self.agent, [
@@ -629,8 +632,8 @@ class GlobalLogic:
                 self.agent.cure_disease().every(5),
             ])
             .preempt(self.agent, [
-                self.agent.eat_corpses_from_ground(only_below_me=True).condition(lambda: self.agent.blstats.hunger_state >= Hunger.NOT_HUNGRY),
-                self.agent.eat_corpses_from_ground().every(5).condition(lambda: self.agent.blstats.hunger_state >= Hunger.NOT_HUNGRY),
+                self.agent.eat_corpses_from_ground(only_below_me=True).condition(lambda: self.agent.blstats.hunger_state >= Hunger.HUNGRY),
+                self.agent.eat_corpses_from_ground().every(5).condition(lambda: self.agent.blstats.hunger_state >= Hunger.HUNGRY),
                 self.agent.eat_from_inventory().every(5),
             ])
             .preempt(self.agent, [
