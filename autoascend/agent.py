@@ -1416,8 +1416,11 @@ class Agent:
 
         items = [item for item in flatten_items(self.inventory.items) if item.is_unambiguous() and
                  item.category == nh.POTION_CLASS and item.object.name in ['healing', 'extra healing', 'full healing']]
+        # hypothesis: using an identified healing potion at half health leaves a
+        # buffer for the next melee hit, preventing low-HP deaths across the
+        # fragile barbarian variants before the old last-moment trigger runs.
         if (
-                (self.blstats.hitpoints < 1 / 3 * self.blstats.max_hitpoints
+                (self.blstats.hitpoints < 1 / 2 * self.blstats.max_hitpoints
                  or self.blstats.hitpoints < 8) and items
         ):
             yield True
