@@ -3,10 +3,6 @@
 # contact attacks while preserving safe ranged and wand attacks.
 ONLY_RANGED_SLOW_MONSTERS = ['floating eye', 'blue jelly', 'brown mold', 'gas spore', 'acid blob',
                              'chickatrice', 'cockatrice']
-# hypothesis: keeping an unarmed barbarian in combat long enough to retreat
-# from a visible contact-petrifier prevents exploration from pathing into a
-# cockatrice or chickatrice when no safe ranged attack is available.
-PETRIFYING_MONSTERS = ['chickatrice', 'cockatrice']
 EXPLODING_MONSTERS = ['yellow light', 'gas spore', 'flaming sphere', 'freezing sphere', 'shocking sphere']
 # hypothesis: treating common early multi-attack monsters as dangerous at a
 # larger safety margin lets every barbarian retreat before one melee turn can

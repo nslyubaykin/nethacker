@@ -516,8 +516,11 @@ class GlobalLogic:
             explore_stairs_condition = lambda: False
             if self.milestone == Milestone.BE_ON_FIRST_LEVEL:
                 condition = lambda: self.agent.blstats.experience_level >= 8
-                # explore_stairs_condition = lambda: self.agent.inventory.items.total_nutrition() == 0 and \
-                #                                    self.agent.blstats.hunger_state >= Hunger.NOT_HUNGRY
+                # hypothesis: abandoning an exhausted first level only once hunger is
+                # urgent prevents starvation while retaining the early XP farming that
+                # makes the next dungeon levels survivable for every barbarian identity.
+                explore_stairs_condition = lambda: self.agent.inventory.items.total_nutrition() == 0 and \
+                                                   self.agent.blstats.hunger_state >= Hunger.WEAK
                 level = (Level.DUNGEONS_OF_DOOM, 1)
 
             elif self.milestone == Milestone.FIND_SOKOBAN:
