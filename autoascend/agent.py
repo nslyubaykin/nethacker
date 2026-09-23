@@ -1461,14 +1461,23 @@ class Agent:
     def eat_from_inventory(self):
         if self.blstats.hunger_state < Hunger.HUNGRY:
             yield False
-        for item in flatten_items(self.inventory.items):
-            if item.category == nh.FOOD_CLASS and \
-                    item.objs[0].name != 'sprig of wolfsbane' and \
-                    (not item.is_corpse() or
-                     item.monster_id in [MON.from_name(n) - nh.GLYPH_MON_OFF for n in ['lizard', 'lichen']]):
-                yield True
-                self.inventory.eat(item)
-                return
+        foods = [item for item in flatten_items(self.inventory.items)
+                 if item.category == nh.FOOD_CLASS and
+                 item.objs[0].name != 'sprig of wolfsbane' and
+                 (not item.is_corpse() or
+                  item.monster_id in [MON.from_name(n) - nh.GLYPH_MON_OFF for n in ['lizard', 'lichen']])]
+        if foods:
+            # hypothesis: eating the smallest safe meal at ordinary hunger
+            # avoids wasting ration nutrition to the satiation cap, preserving
+            # the food supply for the long early-game exploration phase.
+            # Tins and special corpses have no useful static nutrition value;
+            # leave those as a last resort rather than mistaking zero for a
+            # small meal.
+            item = min(foods, key=lambda food: food.object.nutrition
+                       if food.object.nutrition > 0 else float('inf'))
+            yield True
+            self.inventory.eat(item)
+            return
         yield False
 
     @utils.debug_log('cure_disease')
