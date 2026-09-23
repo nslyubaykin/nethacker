@@ -4,11 +4,11 @@
 ONLY_RANGED_SLOW_MONSTERS = ['floating eye', 'blue jelly', 'brown mold', 'gas spore', 'acid blob',
                              'chickatrice', 'cockatrice']
 EXPLODING_MONSTERS = ['yellow light', 'gas spore', 'flaming sphere', 'freezing sphere', 'shocking sphere']
-# hypothesis: classifying high-damage multi-attack monsters and lycanthropes as
-# dangerous lets the existing low-health retreat policy avoid fatal melee
-# exchanges across all barbarian identities.
+# hypothesis: treating rapid multi-attack and draining melee monsters as dangerous
+# makes the existing low-health retreat policy avoid lethal close exchanges.
 DANGEROUS_MONSTERS = ['giant ant', 'killer bee', 'soldier ant', 'fire ant', 'giant beetle', 'queen bee',
-                      'jaguar', 'leocrotta', 'tiger', 'owlbear', 'mumak']
+                      'jaguar', 'leocrotta', 'tiger', 'owlbear', 'mumak',
+                      'vampire bat', 'giant bat']
 WEAK_MONSTERS = ['lichen', 'newt', 'shrieker', 'grid bug']
 WEIRD_MONSTERS = ['leprechaun', 'nymph']
 
