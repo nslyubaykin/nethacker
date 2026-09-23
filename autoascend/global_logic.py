@@ -627,10 +627,6 @@ class GlobalLogic:
             .preempt(self.agent, [
                 self.agent.eat_corpses_from_ground(only_below_me=True).condition(lambda: self.agent.blstats.hunger_state >= Hunger.NOT_HUNGRY),
                 self.agent.eat_corpses_from_ground().every(5).condition(lambda: self.agent.blstats.hunger_state >= Hunger.NOT_HUNGRY),
-                # hypothesis: eating carried food immediately when weak prevents the
-                # periodic hunger check from allowing otherwise avoidable starvation.
-                self.agent.eat_from_inventory().condition(
-                    lambda: self.agent.blstats.hunger_state >= Hunger.WEAK),
                 self.agent.eat_from_inventory().every(5),
             ])
             .preempt(self.agent, [
