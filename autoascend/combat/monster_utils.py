@@ -23,7 +23,10 @@ def is_monster_faster(agent, monster):
 def imminent_death_on_melee(agent, monster):
     if is_dangerous_monster(monster):
         return agent.blstats.hitpoints <= 16
-    return agent.blstats.hitpoints <= 8
+    # hypothesis: retreating at 12 HP against ordinary monsters preserves a
+    # full hit of buffer before melee becomes fatal, improving early survival
+    # for every barbarian identity without changing normal full-health combat.
+    return agent.blstats.hitpoints <= 12
 
 
 def is_dangerous_monster(monster):
