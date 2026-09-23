@@ -1109,15 +1109,12 @@ class Agent:
                                              and not combat.monster_utils.consider_melee_only_ranged_if_hp_full(self,
                                                                                                                 monster)
                                              for monster in monsters])
-            petrifier_nearby = any(monster[0] <= 2 and
-                                    monster[3].mname in combat.monster_utils.PETRIFYING_MONSTERS
-                                    for monster in monsters)
 
             dis = self.bfs()
 
             if not monsters or all(dis > 7 for dis, *_ in monsters) or \
                     (only_ranged_slow_monsters and not self.inventory.get_ranged_combinations()
-                     and np.sum(dis != -1) > 1 and not allow_attack_all and not petrifier_nearby):
+                     and np.sum(dis != -1) > 1 and not allow_attack_all):
                 if wait_counter:
                     self.search()
                     wait_counter -= 1

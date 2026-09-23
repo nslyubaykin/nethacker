@@ -10,7 +10,7 @@ from nle.nethack import actions as A
 from autoascend import objects as O, utils
 from autoascend.character import Character
 from autoascend.exceptions import AgentPanic
-from autoascend.glyph import G, MON
+from autoascend.glyph import G
 from autoascend.item import ItemManager, Item, ContainerContent, check_if_triggered_container_trap, \
     find_equivalent_item, flatten_items
 from autoascend.item.inventory_items import InventoryItems
@@ -47,10 +47,6 @@ class Inventory:
         self.engraving_below_me = None
 
         self.skip_engrave_counter = 0
-
-    @staticmethod
-    def is_petrifying_corpse(item):
-        return item.is_corpse() and ord(MON.permonst(item.monster_id + nh.GLYPH_MON_OFF).mlet) == MON.S_COCKATRICE
 
     def on_panic(self):
         self.items_below_me = None
@@ -850,8 +846,7 @@ class Inventory:
             yield False
 
         while 1:
-            items_below_me = list(filter(lambda i: i.shop_status == Item.NOT_SHOP and not self.is_petrifying_corpse(i),
-                                         flatten_items(self.items_below_me)))
+            items_below_me = list(filter(lambda i: i.shop_status == Item.NOT_SHOP, flatten_items(self.items_below_me)))
             forced_items = list(filter(lambda i: not i.can_be_dropped_from_inventory(), flatten_items(self.items)))
             assert all((item in self.items.all_items for item in forced_items))
             free_items = list(filter(lambda i: i.can_be_dropped_from_inventory(),
@@ -1301,8 +1296,7 @@ class Inventory:
         if not items:
             yield False
 
-        items = {i: pos for item, pos in items.items() for i in flatten_items([item])
-                 if not self.is_petrifying_corpse(i)}
+        items = {i: pos for item, pos in items.items() for i in flatten_items([item])}
 
         free_items = list(filter(lambda i: i.can_be_dropped_from_inventory(), flatten_items(self.items)))
         forced_items = list(filter(lambda i: not i.can_be_dropped_from_inventory(), flatten_items(self.items)))
